@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">App Localizador</string>
+
+    <string name="consent">Prezado usuário, ao prosseguir, estará consentindo com o compartilhamento
+        de seus dados de localização durante a execução do aplicativo. Deseja seguir?</string>
+
+    <string name="botao1">Sim, quero seguir</string>
+
+    <string name="exibir">Exibir satélites próximos</string>
+
+    <string name="sair">Sair</string>
+</resources>

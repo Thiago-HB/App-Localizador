@@ -9,4 +9,12 @@
     <string name="exibir">Exibir satélites próximos</string>
 
     <string name="sair">Sair</string>
+
+    <string name="iniciar">Começar</string>
+    <string name="parar">Parar</string>
+
+    <string name="legenda">Legenda: </string>
+    <string name="legenda2">Azul: Beidou Verde: Galileo</string>
+    <string name="legenda3">Ciano: GPS Branco: Glonass</string>
+
 </resources>

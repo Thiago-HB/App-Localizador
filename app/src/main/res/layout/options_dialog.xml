@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="#C8120F0F"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+
+    <CheckBox
+        android:id="@+id/checkGPS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Esconder GPS?"
+        android:textColor="@color/white" />
+
+    <CheckBox
+        android:id="@+id/checkGalileo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Esconder Galileo?"
+        android:textColor="@color/white" />
+
+    <CheckBox
+        android:id="@+id/checkGlonass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Esconder Glonass?"
+        android:textAlignment="viewStart"
+        android:textColor="@color/white" />
+
+    <CheckBox
+        android:id="@+id/checkBeidou"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Esconder Beidou?"
+        android:textColor="@color/white" />
+</LinearLayout>

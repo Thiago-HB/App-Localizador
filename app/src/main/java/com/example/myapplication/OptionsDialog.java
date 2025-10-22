@@ -5,30 +5,30 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-public class OptionsDialog extends DialogFragment implements View.OnClickListener {
+public class OptionsDialog extends DialogFragment {
 
     CheckBox checkGPS, checkGalileo, checkGlonass, checkBeidou;
 
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
 
+    @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState){
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.options_dialog, null);
 
-       prefs = this.getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        prefs = requireContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        editor = prefs.edit();
 
         checkGPS=view.findViewById(R.id.checkGPS);
         checkGalileo=view.findViewById(R.id.checkGalileo);
@@ -40,44 +40,42 @@ public class OptionsDialog extends DialogFragment implements View.OnClickListene
         checkGlonass.setChecked(prefs.getBoolean("blockGlonass", false));
         checkBeidou.setChecked(prefs.getBoolean("blockBeidou", false));
 
-        editor= prefs.edit();
+        CompoundButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                String prefKey = "";
+                int vId = buttonView.getId();
+
+                if (vId == R.id.checkGPS) {
+                    prefKey = "blockGPS";
+                } else if (vId == R.id.checkGalileo) {
+                    prefKey = "blockGalileo";
+                } else if (vId == R.id.checkGlonass) {
+                    prefKey = "blockGlonass";
+                } else if (vId == R.id.checkBeidou) {
+                    prefKey = "blockBeidou";
+                }
+
+                if (!prefKey.isEmpty()) {
+                    editor.putBoolean(prefKey, isChecked);
+                    editor.apply();
+                }
+            }
+        };
+
+        checkGPS.setOnCheckedChangeListener(listener);
+        checkGalileo.setOnCheckedChangeListener(listener);
+        checkGlonass.setOnCheckedChangeListener(listener);
+        checkBeidou.setOnCheckedChangeListener(listener);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+
+        builder.setView(view);
+
+        builder.setPositiveButton("OK", (dialog, id) -> {
+            dismiss();
+        });
 
         return builder.create();
-
-    }
-
-
-    @Override
-    public void onClick(View v) {
-        int b, gp, ga, gl;
-        b=checkBeidou.getId();
-        gp = checkGPS.getId();
-        ga=checkGalileo.getId();
-        gl=checkGlonass.getId();
-        int vId = v.getId();
-        boolean state;
-
-        if(vId == b){
-            state=prefs.getBoolean("blockBeidou", false);
-            editor.putBoolean("blockBeidou", !state);
-            checkBeidou.setChecked(!state);
-        }
-        if(vId == gp){
-            state=prefs.getBoolean("blockGPS", false);
-            editor.putBoolean("blockGPS", !state);
-            checkGPS.setChecked(!state);
-        }
-        if(vId == ga){
-            state=prefs.getBoolean("blockGalileo", false);
-            editor.putBoolean("blockGalileo", !state);
-            checkGalileo.setChecked(!state);
-        }
-        if(vId == gl){
-            state=prefs.getBoolean("blockGlonass", false);
-            editor.putBoolean("blockGlonass", !state);
-            checkGlonass.setChecked(!state);
-        }
     }
 }
-
-

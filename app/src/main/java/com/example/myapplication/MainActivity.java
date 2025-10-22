@@ -13,6 +13,7 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.content.ContextWrapper; // Importação adicionada
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -22,19 +23,21 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.location.LocationListener;
+import android.location.LocationListener;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_LOCATION_UPDATES = 1;
-LocationManager localizador;
-LocationListener locationListener;
+    LocationManager localizador;
+    LocationListener locationListener;
     GnssStatus.Callback callback;
-     Button start;
-     Button stop;
+    Button start;
+    Button stop;
 
     GNSSView gnssView;
+
+    // **MÉTODO getActivity FOI REMOVIDO DAQUI**
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,6 @@ LocationListener locationListener;
         ConsentDialog dialog = new ConsentDialog();
         dialog.show(getSupportFragmentManager(), "Consent Dialog");
         localizador = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        setContentView(R.layout.activity_main);
         start = findViewById(R.id.startGNSS);
         stop = findViewById(R.id.stopGNSS);
         stop.setVisibility(View.INVISIBLE);
@@ -76,6 +78,31 @@ LocationListener locationListener;
         gnssView = findViewById(R.id.GnssView);
         gnssView.setVisibility(View.INVISIBLE);
 
+        // **CLASSE ANÔNIMA CORRIGIDA**
+        gnssView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Lógica de desembrulhamento embutida
+                Context context = v.getContext();
+                AppCompatActivity activity = null;
+
+                while (context != null) {
+                    if (context instanceof AppCompatActivity) {
+                        activity = (AppCompatActivity) context;
+                        break;
+                    }
+                    if (context instanceof ContextWrapper) {
+                        context = ((ContextWrapper) context).getBaseContext();
+                    } else {
+                        break;
+                    }
+                }
+
+                // Exibição do Diálogo
+                OptionsDialog options = new OptionsDialog();
+                options.show(MainActivity.this.getSupportFragmentManager(), "Options Dialog");
+            }
+        });
     }
 
     public void startGNSSUpdate(){
@@ -83,16 +110,21 @@ LocationListener locationListener;
         if(ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)==
                 PackageManager.PERMISSION_GRANTED){
+
             gnssView.setVisibility(View.VISIBLE);
+
             locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(@NonNull Location location) {
-
                 }
             };
 
-            localizador.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long)1000, (float)0,
-                    (android.location.LocationListener) locationListener);
+            localizador.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    1000,
+                    0,
+                    locationListener,
+                    Looper.getMainLooper());
 
             callback = new GnssStatus.Callback() {
                 @Override
@@ -109,9 +141,24 @@ LocationListener locationListener;
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION_UPDATES);
         }
-    };
+    }
 
-    public void stopGNSSUpdate(){};
+    public void stopGNSSUpdate(){
+
+        if (locationListener != null) {
+            localizador.removeUpdates(locationListener);
+            locationListener = null;
+        }
+
+        if (callback != null) {
+            localizador.unregisterGnssStatusCallback(callback);
+            callback = null;
+        }
+
+        if (gnssView != null) {
+            gnssView.setVisibility(View.INVISIBLE);
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, int[] grantResults){
@@ -126,10 +173,9 @@ LocationListener locationListener;
             }
 
         }
-    };
+    }
 
     public void atualizaGNSSView(GnssStatus status){
         gnssView.newStatus(status);
-    };
-
+    }
 }

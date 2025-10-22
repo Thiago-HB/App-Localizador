@@ -9,6 +9,18 @@
     android:backgroundTint="#252825"
     tools:context=".MainActivity" >
 
+    <com.example.myapplication.GNSSView
+        android:id="@+id/GnssView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="30dp"
+        android:layout_weight="0.5"
+        android:contentDescription="@string/exibir"
+        android:text="@string/iniciar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/startGNSS"
         android:layout_width="128dp"
@@ -29,17 +41,5 @@
         android:text="@string/parar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <com.example.myapplication.GNSSView
-        android:id="@+id/GnssView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="100dp"
-        android:text="@string/iniciar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

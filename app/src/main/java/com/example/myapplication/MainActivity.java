@@ -34,6 +34,8 @@ LocationListener locationListener;
      Button start;
      Button stop;
 
+    GNSSView gnssView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +73,9 @@ LocationListener locationListener;
             }
         });
 
+        gnssView = findViewById(R.id.GnssView);
+        gnssView.setVisibility(View.INVISIBLE);
+
     }
 
     public void startGNSSUpdate(){
@@ -78,10 +83,11 @@ LocationListener locationListener;
         if(ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)==
                 PackageManager.PERMISSION_GRANTED){
+            gnssView.setVisibility(View.VISIBLE);
             locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(@NonNull Location location) {
-                atualizaLocationView(location);
+
                 }
             };
 
@@ -120,6 +126,10 @@ LocationListener locationListener;
             }
 
         }
+    };
+
+    public void atualizaGNSSView(GnssStatus status){
+        gnssView.newStatus(status);
     };
 
 }

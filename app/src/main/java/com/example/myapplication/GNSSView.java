@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,15 +11,28 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class GNSSView extends View implements View.OnClickListener {
     private final Paint paint = new Paint();
 private int r;
 private int height, width;
+
+    boolean b, gp, ga, gl;
+
 private GnssStatus gnssStatus = null;
+
+SharedPreferences prefs;
+
     public GNSSView(Context context, @Nullable AttributeSet attrs){
         super(context, attrs);
     setOnClickListener(this);
+    prefs = this.getContext().getSharedPreferences("prefs", Context.MODE_PRIVATE);
+
+        b=prefs.getBoolean("blockBeidou", false);
+        gp = prefs.getBoolean("blockGPS", false);
+        ga=prefs.getBoolean("blockGalileo", false);
+        gl=prefs.getBoolean("blockGlonass", false);
     }
 
     @Override
@@ -39,7 +54,14 @@ int radius = r;
         paint.setStyle(Paint.Style.FILL);
 
         if (gnssStatus!=null) {
+
+            b=prefs.getBoolean("blockBeidou", false);
+            gp = prefs.getBoolean("blockGPS", false);
+            ga=prefs.getBoolean("blockGalileo", false);
+            gl=prefs.getBoolean("blockGlonass", false);
+
             for(int i=0; i<gnssStatus.getSatelliteCount(); i++) {
+               boolean state;
                 int provider = gnssStatus.getConstellationType(i);
                 float az=gnssStatus.getAzimuthDegrees(i);
                 float el=gnssStatus.getElevationDegrees(i);
@@ -47,15 +69,19 @@ int radius = r;
                 switch (provider){
                     case GnssStatus.CONSTELLATION_BEIDOU:
                         paint.setColor(Color.BLUE);
+                        state = b;
                         break;
                     case GnssStatus.CONSTELLATION_GALILEO:
                         paint.setColor(Color.GREEN);
+                        state = ga;
                         break;
                     case GnssStatus.CONSTELLATION_GPS:
                         paint.setColor(Color.CYAN);
+                        state = gp;
                         break;
                     case GnssStatus.CONSTELLATION_GLONASS:
                         paint.setColor(Color.WHITE);
+                        state = gl;
                         break;
                     default:
                         break;
@@ -69,7 +95,7 @@ int radius = r;
                 float y=(float)(r*Math.cos(Math.toRadians(el))*Math.cos(Math.toRadians(az)));
 
                 // Desenha o satélite (círculo)
-                canvas.drawCircle(computeXc(x), computeYc(y), 10, paint);
+               if(!b) {canvas.drawCircle(computeXc(x), computeYc(y), 10, paint);};
 
                 // Configura o pincel para desenhar o texto (ID do satélite)
                 paint.setTextAlign(Paint.Align.LEFT);
@@ -78,7 +104,7 @@ int radius = r;
                 String satID = gnssStatus.getSvid(i)+"";
 
                 // Desenha o ID do satélite
-                canvas.drawText(satID,  computeXc(x)+10,  computeYc(y)+10, paint);
+                if(!b)canvas.drawText(satID,  computeXc(x)+10,  computeYc(y)+10, paint);
 
 
             }
@@ -123,6 +149,10 @@ int radius = r;
 
     @Override
     public void onClick(View v) {
+OptionsDialog options = new OptionsDialog();
+Context context = getContext();
+AppCompatActivity contexto = (AppCompatActivity)context;
+options.show(contexto.getSupportFragmentManager(), "Options Dialog");
 
     }
 }
